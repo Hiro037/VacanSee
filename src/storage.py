@@ -62,17 +62,28 @@ class JSONStorage(VacancyStorage):
 
     def top_n_by_salary(self, n: int) -> List[Vacancy]:
         vacancies = self.load()
+
+        # Обработка пустого списка
+        if not vacancies:
+            return []
+
+        # Создаем DataFrame с гарантированным наличием salary
         df = pd.DataFrame([{
             "title": v.title,
-            "salary": v.salary,
+            "salary": v.salary if v.salary is not None else 0,
             "url": v.url,
             "employer": v.employer,
             "description": v.description
         } for v in vacancies])
 
-        df = df[df["salary"] > 0].sort_values(by="salary", ascending=False)
-        top_df = df.head(n)
-        return [Vacancy.from_dict(row._asdict() if hasattr(row, "_asdict") else row.to_dict()) for _, row in top_df.iterrows()]
+        # Фильтрация только если есть данные
+        if not df.empty:
+            df = df[df["salary"] > 0].sort_values(by="salary", ascending=False)
+            top_df = df.head(n)
+        else:
+            top_df = pd.DataFrame()
+
+        return [Vacancy.from_dict(row.to_dict()) for _, row in top_df.iterrows()]
 
     def _write_all(self, vacancies: List[Vacancy]) -> None:
         with open(self._file_path, "w", encoding="utf-8") as f:

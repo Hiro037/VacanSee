@@ -35,10 +35,14 @@ class JSONStorage(VacancyStorage):
     """Хранение вакансий в JSON-файле."""
 
     def __init__(self, file_path: str = "data/vacancies.json"):
-        self._file_path = file_path
-        if not os.path.exists(self._file_path):
-            with open(self._file_path, "w", encoding="utf-8") as f:
+        self.__file_path = file_path
+        if not os.path.exists(self.__file_path):
+            with open(self.__file_path, "w", encoding="utf-8") as f:
                 json.dump([], f)
+
+    @property
+    def file_path(self) -> str:
+        return self.__file_path
 
     def save(self, vacancy: Vacancy) -> None:
         vacancies = self.load()
@@ -47,7 +51,7 @@ class JSONStorage(VacancyStorage):
             self._write_all(vacancies)
 
     def load(self) -> List[Vacancy]:
-        with open(self._file_path, "r", encoding="utf-8") as f:
+        with open(self.__file_path, "r", encoding="utf-8") as f:
             data = json.load(f)
             return [Vacancy.from_dict(v) for v in data]
 
@@ -86,5 +90,5 @@ class JSONStorage(VacancyStorage):
         return [Vacancy.from_dict(row.to_dict()) for _, row in top_df.iterrows()]
 
     def _write_all(self, vacancies: List[Vacancy]) -> None:
-        with open(self._file_path, "w", encoding="utf-8") as f:
-            json.dump([v.__dict__ for v in vacancies], f, ensure_ascii=False, indent=2)
+        with open(self.__file_path, "w", encoding="utf-8") as f:
+            json.dump([v.to_dict() for v in vacancies], f, ensure_ascii=False, indent=2)

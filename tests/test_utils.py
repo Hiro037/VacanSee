@@ -43,14 +43,14 @@ def test_sort_vacancies_ascending(sample_vacancies):
 
 def test_sort_vacancies_with_none():
     vacancies = [
-        Vacancy("A", None, "", "", ""),
+        Vacancy("A", 0, "", "", ""),
         Vacancy("B", 100, "", "", ""),
         Vacancy("C", 50, "", "", "")
     ]
     sorted_list = sort_vacancies(vacancies)
     assert sorted_list[0].salary == 100
     assert sorted_list[1].salary == 50
-    assert sorted_list[2].salary is None
+    assert sorted_list[2].salary == 0
 
 def test_get_top_vacancies(sample_vacancies):
     top = get_top_vacancies(sample_vacancies, 3)

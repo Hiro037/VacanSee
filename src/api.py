@@ -15,19 +15,23 @@ class VacancyAPI(ABC):
 class HeadHunterAPI(VacancyAPI):
     """Класс для работы с API hh.ru"""
 
-    BASE_URL = "https://api.hh.ru/vacancies"
+    __BASE_URL = "https://api.hh.ru/vacancies"
 
     def __init__(self, pages: int = 5, per_page: int = 20):
         self.pages = pages
         self.per_page = per_page
         self.vacancies: List[Dict] = []
 
+    @property
+    def base_url(self) -> str:
+        return self.__BASE_URL
+
     def get_vacancies(self, keyword: str) -> List[Dict]:
         all_vacancies = []
 
         for page in range(self.pages):
             params = {"text": keyword, "page": page, "per_page": self.per_page}
-            response = requests.get(self.BASE_URL, params=params)
+            response = requests.get(self.__BASE_URL, params=params)
 
             if response.status_code != 200:
                 print(f"Ошибка запроса: {response.status_code}")
